@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ prayer.title }} - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('prayers') }}">Prayers</a></li>
+            <li class="breadcrumb-item active">{{ prayer.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h1 class="mb-3">{{ prayer.title }}</h1>
+                        {% if prayer.category %}
+                        <span class="badge bg-primary fs-6 mb-3">{{ prayer.category|title }}</span>
+                        {% endif %}
+                        {% if prayer.is_featured %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-star me-2"></i>This is a featured prayer
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="prayer-content" style="font-size: 1.1rem; line-height: 1.8;">
+                        {{ prayer.content|replace('\n', '<br>')|safe }}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="text-muted mb-3">Share this prayer:</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-outline-primary" onclick="sharePrayer()">
+                                <i class="fas fa-share me-1"></i>Share
+                            </button>
+                            <button class="btn btn-outline-success" onclick="printPrayer()">
+                                <i class="fas fa-print me-1"></i>Print
+                            </button>
+                            <button class="btn btn-outline-info" onclick="copyPrayer()">
+                                <i class="fas fa-copy me-1"></i>Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Back to Prayers -->
+            <div class="text-center mt-4">
+                <a href="{{ url_for('prayers') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to All Prayers
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sharePrayer() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ prayer.title }}',
+            text: '{{ prayer.content[:200] }}...',
+            url: window.location.href
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        copyToClipboard(window.location.href);
+        alert('Prayer link copied to clipboard!');
+    }
+}
+
+function printPrayer() {
+    window.print();
+}
+
+function copyPrayer() {
+    const prayerText = `{{ prayer.title }}\n\n{{ prayer.content|replace('"', '\\"') }}`;
+    copyToClipboard(prayerText);
+    alert('Prayer copied to clipboard!');
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        console.log('Text copied to clipboard');
+    }).catch(function(err) {
+        console.error('Error copying text: ', err);
+    });
+}
+</script>
+{% endblock %}

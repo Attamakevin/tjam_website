@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ video.title }} - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('adoration_videos') }}">Videos</a></li>
+            <li class="breadcrumb-item active">{{ video.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Video Player -->
+            <div class="card mb-4">
+                <div class="ratio ratio-16x9">
+                    <iframe 
+                        src="https://www.youtube.com/embed/{{ video.youtube_id }}" 
+                        title="{{ video.title }}"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title">{{ video.title }}</h1>
+                        {% if video.is_featured %}
+                        <span class="badge bg-warning fs-6">Featured</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <small class="text-muted">
+                                <i class="fas fa-eye me-1"></i>{{ video.view_count }} views
+                            </small>
+                            <span class="mx-2">•</span>
+                            <small class="text-muted">{{ video.created_at.strftime('%B %d, %Y') }}</small>
+                        </div>
+                        <div>
+                            <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-outline-danger">
+                                <i class="fab fa-youtube me-1"></i>Watch on YouTube
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if video.description %}
+                    <div class="video-description">
+                        <h5>Description</h5>
+                        <p>{{ video.description|replace('\n', '<br>')|safe }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Related Videos -->
+            {% if related_videos %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Related Videos</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% for related_video in related_videos %}
+                    <div class="d-flex p-3 border-bottom">
+                        <div class="flex-shrink-0">
+                            <a href="{{ url_for('video_detail', video_id=related_video.id) }}">
+                                <img src="{{ related_video.thumbnail_url }}" alt="{{ related_video.title }}" 
+                                     class="rounded" style="width: 120px; height: 68px; object-fit: cover;">
+                            </a>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">
+                                <a href="{{ url_for('video_detail', video_id=related_video.id) }}" 
+                                   class="text-decoration-none">{{ related_video.title }}</a>
+                            </h6>
+                            <small class="text-muted d-block">{{ related_video.view_count }} views</small>
+                            <small class="text-muted">{{ related_video.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

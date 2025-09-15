@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Live Adoration - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Live Adoration</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h1>Live Adoration</h1>
+        <p>Join us in continuous worship and adoration of Jesus Christ</p>
+    </div>
+
+    <!-- Live Stream Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="ratio ratio-16x9 mb-3">
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded">
+                            <div class="text-center">
+                                <i class="fas fa-video fa-4x text-muted mb-3"></i>
+                                <h4>Live Stream</h4>
+                                <p class="text-muted">Live adoration stream would be embedded here<br>
+                                using YouTube Live, Facebook Live, or custom streaming solution</p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success fs-6 me-2">
+                                        <i class="fas fa-circle me-1"></i>LIVE
+                                    </span>
+                                    <span class="text-muted">127 viewers</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Perpetual Adoration - Holy Hour</h5>
+                            <small class="text-muted">Started 2 hours ago</small>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-volume-up me-1"></i>Audio Only
+                            </button>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-expand me-1"></i>Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adoration Schedule -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Today's Adoration Schedule</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>6:00 AM - 8:00 AM</strong>
+                                <br><small class="text-muted">Morning Prayer & Adoration</small>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>12:00 PM - 2:00 PM</strong>
+                                <br><small class="text-muted">Midday Holy Hour</small>
+                            </div>
+                            <span class="badge bg-primary">Live Now</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>6:00 PM - 8:00 PM</strong>
+                                <br><small class="text-muted">Evening Adoration</small>
+                            </div>
+                            <span class="badge bg-secondary">Upcoming</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>10:00 PM - 6:00 AM</strong>
+                                <br><small class="text-muted">Night Watch</small>
+                            </div>
+                            <span class="badge bg-secondary">Upcoming</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">How to Participate</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-desktop text-primary me-2"></i>Online Participation</h6>
+                        <p class="small">Join us virtually through our live stream. You can pray along from anywhere in the world.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-church text-primary me-2"></i>In-Person Adoration</h6>
+                        <p class="small">Visit our adoration chapel at 123 Church Street, Lagos. Open 24/7 for private prayer.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-mobile-alt text-primary me-2"></i>Mobile App</h6>
+                        <p class="small">Download our mobile app for prayer reminders and offline prayer resources.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-heart text-primary me-2"></i>Prayer Intentions</h6>
+                        <p class="small">Submit your prayer intentions to be included in our adoration sessions.</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-primary">Submit Prayer Intention</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Resources -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Adoration Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-pray fa-2x text-primary mb-2"></i>
+                                <h6>Adoration Prayers</h6>
+                                <a href="{{ url_for('prayers') }}" class="btn btn-sm btn-outline-primary">View Prayers</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-music fa-2x text-primary mb-2"></i>
+                                <h6>Worship Songs</h6>
+                                <button class="btn btn-sm btn-outline-primary">Listen</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-book fa-2x text-primary mb-2"></i>
+                                <h6>Scripture Readings</h6>
+                                <button class="btn btn-sm btn-outline-primary">Today's Readings</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="text-center p-3 border rounded">
+                                <i class="fas fa-rosary fa-2x text-primary mb-2"></i>
+                                <h6>Rosary</h6>
+                                <button class="btn btn-sm btn-outline-primary">Pray Rosary</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

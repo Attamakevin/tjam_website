@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - TJAM Blog{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <article class="blog-post">
+                <!-- Featured Image -->
+                {% if post.featured_image %}
+                <div class="mb-4">
+                    <img src="{{ post.featured_image }}" class="img-fluid rounded" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                
+                <!-- Post Header -->
+                <header class="mb-4">
+                    <h1 class="display-5 fw-bold text-primary">{{ post.title }}</h1>
+                    <div class="text-muted mb-3">
+                        <i class="fas fa-user me-2"></i>By {{ post.author.username }}
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-calendar me-2"></i>{{ post.created_at.strftime('%B %d, %Y') }}
+                        {% if post.updated_at != post.created_at %}
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-edit me-2"></i>Updated {{ post.updated_at.strftime('%B %d, %Y') }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Share Buttons -->
+                    <div class="share-buttons mb-4">
+                        <span class="me-3">Share this post:</span>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" 
+                           target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ post.title }}" 
+                           target="_blank" class="btn btn-sm btn-outline-info me-2">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://wa.me/?text={{ post.title }}%20{{ request.url }}" 
+                           target="_blank" class="btn btn-sm btn-outline-success">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
+                </header>
+                
+                <!-- Post Content -->
+                <div class="post-content">
+                    {{ post.content | safe }}
+                </div>
+                
+                <!-- Tags/Categories (if you add them later) -->
+                <div class="mt-4 pt-4 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{{ url_for('blog') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Blog
+                            </a>
+                        </div>
+                        <div class="text-muted">
+                            <small>Published {{ post.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 100px;">
+                <!-- Related Posts -->
+                {% if related_posts %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-newspaper me-2"></i>Related Posts</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for related_post in related_posts %}
+                        <div class="d-flex mb-3 {% if not loop.last %}border-bottom pb-3{% endif %}">
+                            {% if related_post.featured_image %}
+                            <img src="{{ related_post.featured_image }}" 
+                                 class="rounded me-3" 
+                                 style="width: 60px; height: 60px; object-fit: cover;" 
+                                 alt="{{ related_post.title }}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            <div class="bg-light rounded me-3 align-items-center justify-content-center" 
+                                 style="width: 60px; height: 60px; display: none;">
+                                <i class="fas fa-newspaper text-muted"></i>
+                            </div>
+                            {% else %}
+                            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
+                                 style="width: 60px; height: 60px;">
+                                <i class="fas fa-newspaper text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('blog_post', post_id=related_post.id) }}" 
+                                       class="text-decoration-none">{{ related_post.title }}</a>
+                                </h6>
+                                <small class="text-muted">
+                                    {{ related_post.created_at.strftime('%b %d, %Y') }}
+                                </small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Recent Posts -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Posts</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Check out our latest blog posts for more inspiring content.</p>
+                        <a href="{{ url_for('blog') }}" class="btn btn-sm btn-primary">View All Posts</a>
+                    </div>
+                </div>
+                
+                <!-- Call to Action -->
+                <div class="card mb-4 bg-light">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-heart text-danger me-2"></i>Join Our Community</h5>
+                        <p class="mb-3">Stay connected with TJAM and receive updates about our ministry.</p>
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('contact') }}" class="btn btn-primary btn-sm">Contact Us</a>
+                            <a href="{{ url_for('testimonies') }}" class="btn btn-outline-primary btn-sm">Share Your Testimony</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Live Adoration -->
+                <div class="card mb-4 border-warning">
+                    <div class="card-body text-center">
+                        <div class="text-warning mb-2">
+                            <i class="fas fa-play-circle fa-2x"></i>
+                        </div>
+                        <h6>Join Live Adoration</h6>
+                        <p class="small text-muted mb-3">Experience the presence of God in our live worship sessions.</p>
+                        <a href="{{ url_for('live_adoration') }}" class="btn btn-warning btn-sm">Watch Live</a>
+                    </div>
+                </div>
+                
+                <!-- Prayer Request -->
+                <div class="card border-info">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-2">
+                            <i class="fas fa-praying-hands fa-2x"></i>
+                        </div>
+                        <h6>Need Prayer?</h6>
+                        <p class="small text-muted mb-3">Our prayer team is here to support you in your spiritual journey.</p>
+                        <a href="{{ url_for('contact') }}" class="btn btn-info btn-sm">Request Prayer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripture Quote Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <blockquote class="blockquote">
+                    <p class="mb-0">"Therefore, since we are surrounded by such a great cloud of witnesses, let us throw off everything that hinders and the sin that so easily entangles. And let us run with perseverance the race marked out for us."</p>
+                </blockquote>
+                <figcaption class="blockquote-footer mt-2">
+                    <cite title="Source Title">Hebrews 12:1</cite>
+                </figcaption>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .post-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    
+    .post-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .post-content h2, .post-content h3, .post-content h4 {
+        color: var(--primary-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .share-buttons a {
+        text-decoration: none;
+    }
+    
+    .blog-post img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    @media (max-width: 991px) {
+        .sticky-top {
+            position: static !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Testimonies - TJAM Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Admin Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Admin Menu</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a href="{{ url_for('admin_posts') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-newspaper me-2"></i>Blog Posts
+                    </a>
+                    <a href="{{ url_for('admin_videos') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-video me-2"></i>Videos
+                    </a>
+                    <a href="{{ url_for('admin_events') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar me-2"></i>Events
+                    </a>
+                    <a href="{{ url_for('admin_testimonies') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-heart me-2"></i>Testimonies
+                    </a>
+                    <a href="{{ url_for('admin_messages') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope me-2"></i>Messages
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-heart me-2"></i>Manage Testimonies</h2>
+                <div>
+                    <span class="badge bg-warning me-2">
+                        {{ testimonies | selectattr('is_approved', 'equalto', False) | list | length }} Pending
+                    </span>
+                    <span class="badge bg-success">
+                        {{ testimonies | selectattr('is_approved', 'equalto', True) | list | length }} Approved
+                    </span>
+                </div>
+            </div>
+
+            {% if testimonies %}
+            <div class="row">
+                {% for testimony in testimonies %}
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100 {% if not testimony.is_approved %}border-warning{% else %}border-success{% endif %}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ testimony.name }}</h6>
+                                <small class="text-muted">{{ testimony.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                            </div>
+                            <div>
+                                {% if testimony.is_approved %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">{{ testimony.title }}</h6>
+                            <p class="card-text">
+                                {{ testimony.content[:200] }}{% if testimony.content|length > 200 %}...{% endif %}
+                            </p>
+                            {% if testimony.email %}
+                            <p class="small text-muted">
+                                <i class="fas fa-envelope me-1"></i>{{ testimony.email }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                {% if not testimony.is_approved %}
+                                <a href="{{ url_for('admin_approve_testimony', testimony_id=testimony.id) }}" 
+                                   class="btn btn-success btn-sm">
+                                    <i class="fas fa-check me-1"></i>Approve
+                                </a>
+                                {% endif %}
+                                
+                                <!-- View Full Testimony Button -->
+                                <button type="button" class="btn btn-info btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#testimonyModal{{ testimony.id }}">
+                                    <i class="fas fa-eye me-1"></i>View Full
+                                </button>
+                                
+                                <!-- Delete Button -->
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        onclick="confirmDelete('{{ testimony.id }}', '{{ testimony.title }}')">
+                                    <i class="fas fa-trash me-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Testimony Modal -->
+                <div class="modal fade" id="testimonyModal{{ testimony.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ testimony.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <strong>Name:</strong> {{ testimony.name }}<br>
+                                    {% if testimony.email %}
+                                    <strong>Email:</strong> {{ testimony.email }}<br>
+                                    {% endif %}
+                                    <strong>Submitted:</strong> {{ testimony.created_at.strftime('%B %d, %Y at %I:%M %p') }}<br>
+                                    <strong>Status:</strong> 
+                                    {% if testimony.is_approved %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </div>
+                                <hr>
+                                <div style="white-space: pre-line;">{{ testimony.content }}</div>
+                            </div>
+                            <div class="modal-footer">
+                                {% if not testimony.is_approved %}
+                                <a href="{{ url_for('admin_approve_testimony', testimony_id=testimony.id) }}" 
+                                   class="btn btn-success">
+                                    <i class="fas fa-check me-1"></i>Approve
+                                </a>
+                                {% endif %}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination if needed -->
+            {% if testimonies|length > 20 %}
+            <nav aria-label="Testimonies pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                <h4>No Testimonies Yet</h4>
+                <p class="text-muted">No testimonies have been submitted yet.</p>
+                <a href="{{ url_for('submit_testimony') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add First Testimony
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the testimony "<span id="deleteTestimonyTitle"></span>"?</p>
+                <p class="text-danger"><strong>This action cannot be undone.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .list-group-item.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+<script>
+function confirmDelete(testimonyId, testimonyTitle) {
+    document.getElementById('deleteTestimonyTitle').textContent = testimonyTitle;
+    document.getElementById('deleteForm').action = `/admin/testimony/${testimonyId}/delete`;
+    
+    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
+</script>

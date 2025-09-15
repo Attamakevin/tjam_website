@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">About</li>
+        </ol>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 mb-4">About Triumphant Jesus Adoration Ministry</h1>
+            <p class="lead">Founded on the belief that continuous worship and adoration of Jesus Christ can transform lives and communities, TJAM has been a beacon of faith and hope for believers seeking a deeper relationship with our Lord.</p>
+        </div>
+        <div class="col-lg-6">
+            <img src="{{ url_for('static', filename='images/fr_attah.jpg') }}" alt="About TJAM" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <!-- Mission, Vision, Values -->
+    <div class="row mb-5">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-bullseye fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Our Mission</h4>
+                    <p class="card-text">To foster a community of believers united in perpetual adoration of Jesus Christ, promoting spiritual growth, healing, and transformation through continuous worship and prayer.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-eye fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Our Vision</h4>
+                    <p class="card-text">To be a leading center of Catholic adoration ministry, inspiring believers worldwide to experience the transformative power of Jesus Christ through dedicated worship and community service.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                    <h4 class="card-title">Our Values</h4>
+                    <p class="card-text">Faith, Unity, Service, and Devotion guide everything we do. We believe in the power of community, the importance of continuous prayer, and the call to serve others with love and compassion.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Our Story -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="section-title">
+                <h2>Our Story</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <p>Triumphant Jesus Adoration Ministry was founded with a simple yet profound vision: to create a sacred space where believers could come together in continuous worship and adoration of Jesus Christ. Our journey began as a small group of devoted Catholics dedicated to perpetual adoration.</p>
+                    
+                    <p>What started as a humble gathering has grown into a vibrant community of worshippers from all walks of life. Our ministry is built on the foundation of the Catholic tradition of Eucharistic Adoration, where the consecrated host is exposed for worship, allowing believers to spend time in the presence of Jesus.</p>
+                    
+                    <p>The name "Triumphant Jesus" reflects our belief in the victory of Christ over sin and death, and our adoration practices celebrate this triumph while inviting participants to experience personal transformation through worship.</p>
+                    
+                    <p>Today, TJAM continues to serve as a place of refuge, healing, and spiritual growth for all who seek a deeper relationship with Jesus Christ through adoration and community worship.</p>
+                </div>
+                <div class="col-lg-4">
+                    <img src="{{ url_for('static', filename='images/jesusonahorse.png') }}" alt="Triumphant Jesus" class="img-fluid rounded shadow">
+                    <p class="text-center mt-3"><em>Jesus Christ - Our Triumphant Lord</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leadership Team -->
+    <div class="section-title">
+        <h2>Our Leadership Team</h2>
+        <p>Meet the dedicated individuals who guide our ministry</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <img src="{{ url_for('static', filename='images/image.png') }}" alt="Father John" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    <h5 class="card-title">Fr Dennis John Chukwubuzor Attah</h5>
+                    <p class="text-muted">Spiritual Director</p>
+                    <p class="card-text">Leading our community with wisdom and devotion for over 21 years. Fr Dennisbrings deep theological knowledge and a passion for Eucharistic Adoration.</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Statistics -->
+    <div class="bg-primary text-white rounded p-5 my-5">
+        <div class="row text-center">
+            <div class="col-md-3 mb-3">
+                <h3 class="display-4">24/7</h3>
+                <p>Adoration Hours</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="display-4">500+</h3>
+                <p>Active Members</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="display-4">10+</h3>
+                <p>Years of Service</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <h3 class="display-4">1000+</h3>
+                <p>Lives Touched</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center">
+        <h3>Join Our Community</h3>
+        <p class="lead">Experience the transformative power of adoration</p>
+        <div class="mt-4">
+            <a href="{{ url_for('live_adoration') }}" class="btn btn-primary btn-lg me-3">Join Adoration</a>
+            <a href="{{ url_for('contact') }}" class="btn btn-outline-primary btn-lg">Contact Us</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

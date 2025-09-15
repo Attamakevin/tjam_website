@@ -1,0 +1,161 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Edit' if stream else 'Add' }} Live Stream - Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_livestreams') }}">Live Streams</a></li>
+            <li class="breadcrumb-item active">{{ 'Edit' if stream else 'Add' }} Stream</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ 'Edit' if stream else 'Add New' }} Live Stream</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{{ stream.title if stream else '' }}" required>
+                            <div class="form-text">Give your live stream a descriptive title</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" 
+                                      rows="3">{{ stream.description if stream else '' }}</textarea>
+                            <div class="form-text">Brief description of the stream content</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stream_type" class="form-label">Stream Type</label>
+                            <select class="form-select" id="stream_type" name="stream_type" onchange="updateUrlPlaceholder()">
+                                <option value="youtube" {{ 'selected' if stream and stream.stream_type == 'youtube' else '' }}>
+                                    YouTube Live
+                                </option>
+                                <option value="facebook" {{ 'selected' if stream and stream.stream_type == 'facebook' else '' }}>
+                                    Facebook Live
+                                </option>
+                                <option value="custom" {{ 'selected' if stream and stream.stream_type == 'custom' else '' }}>
+                                    Custom Stream
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stream_url" class="form-label">Stream URL</label>
+                            <input type="url" class="form-control" id="stream_url" name="stream_url" 
+                                   value="{{ stream.stream_url if stream else '' }}" 
+                                   placeholder="https://www.youtube.com/embed/VIDEO_ID">
+                            <div class="form-text" id="url-help">
+                                Enter the embed URL for your live stream
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_live" name="is_live"
+                                       {{ 'checked' if stream and stream.is_live else '' }}>
+                                <label class="form-check-label" for="is_live">
+                                    <strong>Set as Live</strong>
+                                </label>
+                                <div class="form-text">Check this to make this stream go live immediately</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>{{ 'Update' if stream else 'Create' }} Stream
+                            </button>
+                            <a href="{{ url_for('admin_livestreams') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Stream URL Examples</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>YouTube Live:</strong>
+                        <code class="d-block small mt-1">https://www.youtube.com/embed/VIDEO_ID</code>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Facebook Live:</strong>
+                        <code class="d-block small mt-1">https://www.facebook.com/plugins/video.php?href=VIDEO_URL</code>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Custom Stream:</strong>
+                        <code class="d-block small mt-1">rtmp://your-server.com/live/stream-key</code>
+                    </div>
+                </div>
+            </div>
+
+            {% if stream %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Stream Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Status:</strong>
+                        {% if stream.is_live %}
+                            <span class="badge bg-success ms-1">LIVE</span>
+                        {% else %}
+                            <span class="badge bg-secondary ms-1">Offline</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Viewers:</strong> {{ stream.viewer_count }}
+                    </div>
+                    {% if stream.started_at %}
+                    <div class="mb-2">
+                        <strong>Started:</strong> {{ stream.started_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                    {% endif %}
+                    <div class="mb-2">
+                        <strong>Created:</strong> {{ stream.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function updateUrlPlaceholder() {
+    const streamType = document.getElementById('stream_type').value;
+    const streamUrl = document.getElementById('stream_url');
+    const urlHelp = document.getElementById('url-help');
+    
+    switch(streamType) {
+        case 'youtube':
+            streamUrl.placeholder = 'https://www.youtube.com/embed/VIDEO_ID';
+            urlHelp.textContent = 'Enter the YouTube embed URL (get from YouTube share > embed)';
+            break;
+        case 'facebook':
+            streamUrl.placeholder = 'https://www.facebook.com/plugins/video.php?href=VIDEO_URL';
+            urlHelp.textContent = 'Enter the Facebook video embed URL';
+            break;
+        case 'custom':
+            streamUrl.placeholder = 'rtmp://your-server.com/live/stream-key';
+            urlHelp.textContent = 'Enter your custom streaming URL or RTMP endpoint';
+            break;
+    }
+}
+
+// Initialize placeholder on page load
+document.addEventListener('DOMContentLoaded', updateUrlPlaceholder);
+</script>
+{% endblock %}

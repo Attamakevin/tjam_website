@@ -1,0 +1,125 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Events - TJAM Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="card">
+                <div class="card-header">Admin Menu</div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_dashboard') }}" class="list-group-item">Dashboard</a>
+                    <a href="{{ url_for('admin_events') }}" class="list-group-item active">Events</a>
+                    <a href="{{ url_for('admin_new_event') }}" class="list-group-item">Add Event</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Events</h5>
+                    <a href="{{ url_for('admin_new_event') }}" class="btn btn-primary btn-sm">+ Add Event</a>
+                </div>
+                <div class="card-body">
+                    <!-- Stats -->
+                    <div class="row text-center mb-4">
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded shadow-sm">
+                                <h3>{{ events|length }}</h3>
+                                <p class="mb-0">Total Events</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded shadow-sm">
+                                <h3>{{ upcoming_events|length }}</h3>
+                                <p class="mb-0">Upcoming</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded shadow-sm">
+                                <h3>{{ past_events|length }}</h3>
+                                <p class="mb-0">Past</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 bg-light rounded shadow-sm">
+                                <h3>{{ this_month_events|length }}</h3>
+                                <p class="mb-0">This Month</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" id="eventTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="all-tab" data-bs-toggle="tab" href="#all" role="tab">All</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="upcoming-tab" data-bs-toggle="tab" href="#upcoming" role="tab">Upcoming</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="past-tab" data-bs-toggle="tab" href="#past" role="tab">Past</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3" id="eventTabsContent">
+                        <!-- All Events -->
+                        <div class="tab-pane fade show active" id="all" role="tabpanel">
+                            {% if events %}
+                                <ul class="list-group">
+                                    {% for event in events %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ event.title }}</strong><br>
+                                                <small>{{ event.event_date.strftime("%b %d, %Y %I:%M %p") }}</small>
+                                            </div>
+                                            <div>
+                                                <a href="{{ url_for('admin_edit_event', event_id=event.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                                <form action="{{ url_for('admin_delete_event', event_id=event.id) }}" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No events found.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Upcoming Events -->
+                        <div class="tab-pane fade" id="upcoming" role="tabpanel">
+                            {% if upcoming_events %}
+                                <ul class="list-group">
+                                    {% for event in upcoming_events %}
+                                        <li class="list-group-item">{{ event.title }} — {{ event.event_date.strftime("%b %d, %Y %I:%M %p") }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No upcoming events.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Past Events -->
+                        <div class="tab-pane fade" id="past" role="tabpanel">
+                            {% if past_events %}
+                                <ul class="list-group">
+                                    {% for event in past_events %}
+                                        <li class="list-group-item">{{ event.title }} — {{ event.event_date.strftime("%b %d, %Y %I:%M %p") }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No past events.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

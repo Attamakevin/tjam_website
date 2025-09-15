@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if prayer else 'New' }} Prayer{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>{{ 'Edit' if prayer else 'Add New' }} Prayer</h2>
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control"
+                   value="{{ prayer.title if prayer else '' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content</label>
+            <textarea name="content" class="form-control" rows="5" required>{{ prayer.content if prayer else '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input type="text" name="category" class="form-control"
+                   value="{{ prayer.category if prayer else '' }}">
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="is_featured" id="is_featured"
+                   {% if prayer and prayer.is_featured %}checked{% endif %}>
+            <label class="form-check-label" for="is_featured">Featured</label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{{ url_for('admin_prayers') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

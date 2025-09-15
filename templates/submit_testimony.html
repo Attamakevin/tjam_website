@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Testimony - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('testimonies') }}">Testimonies</a></li>
+            <li class="breadcrumb-item active">Submit Testimony</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h1>Share Your Testimony</h1>
+        <p>Tell us how God has worked in your life through our ministry</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Your Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="form-text">This will be displayed publicly with your testimony</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                                <div class="form-text">Optional - for our records only</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Testimony Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                   placeholder="e.g., 'Healed through Prayer', 'Found Peace in Adoration'">
+                            <div class="form-text">A brief, descriptive title for your testimony</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="content" class="form-label">Your Testimony *</label>
+                            <textarea class="form-control" id="content" name="content" rows="8" required
+                                      placeholder="Share your story... How has God worked in your life through our ministry? What happened? How did it impact you?"></textarea>
+                            <div class="form-text">Please be as detailed as you'd like. Your story can inspire others!</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Please Note:</strong> All testimonies are reviewed before being published to ensure they align with our ministry values and are appropriate for all audiences.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="consent" required>
+                                <label class="form-check-label" for="consent">
+                                    I consent to having my testimony published on the TJAM website and understand that it may be shared to encourage others in their faith journey. *
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-heart me-2"></i>Submit My Testimony
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Guidelines -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">Testimony Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Share genuine personal experiences</li>
+                        <li>Focus on how God worked in your situation</li>
+                        <li>Keep language appropriate for all ages</li>
+                        <li>Be respectful of others' privacy</li>
+                        <li>Testimonies should be truthful and verifiable</li>
+                        <li>We reserve the right to edit for clarity and length</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

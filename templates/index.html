@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1>Welcome to TJAM</h1>
+                <p class="lead">Triumphant Jesus Adoration Ministry - Where hearts unite in perpetual worship and adoration of our Lord Jesus Christ</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('live_adoration') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-play me-2"></i>Join Live Adoration
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='images/jesusonahorse.png') }}" alt="Jesus on Horse" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Videos Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Featured Adoration Videos</h2>
+            <p>Experience the power of worship through our adoration sessions</p>
+        </div>
+        
+        <div class="row">
+            {% for video in featured_videos %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="video-thumbnail">
+                        <img src="{{ video.thumbnail_url }}" alt="{{ video.title }}" class="card-img-top">
+                        <a href="{{ url_for('video_detail', video_id=video.id) }}" class="play-button">
+                            <i class="fas fa-play"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ video.title }}</h5>
+                        <p class="card-text">{{ video.description[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-eye me-1"></i>{{ video.view_count }} views
+                            </small>
+                            <small class="text-muted">{{ video.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('adoration_videos') }}" class="btn btn-primary">
+                View All Videos <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-4">About Our Ministry</h2>
+                <p class="lead">Triumphant Jesus Adoration Ministry is dedicated to fostering a deep relationship with Jesus Christ through perpetual adoration, prayer, and community worship.</p>
+                <p>Our mission is to create a sacred space where believers can come together to worship, pray, and experience the transformative power of Jesus Christ. We believe in the power of continuous adoration and its ability to bring healing, peace, and spiritual growth to all who participate.</p>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <i class="fas fa-praying-hands fa-3x text-primary mb-3"></i>
+                            <h4>24/7 Adoration</h4>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                            <h4>Community Worship</h4>
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ url_for('about') }}" class="btn btn-primary mt-4">Learn More About Us</a>
+            </div>
+            <div class="col-lg-6">
+                <img src="{{ url_for('static', filename='images/hero-bg.png') }}" alt="Adoration Hall" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Blog Posts -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Recent Blog Posts</h2>
+            <p>Spiritual insights and reflections from our community</p>
+        </div>
+        
+        <div class="row">
+            {% for post in recent_posts %}
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="card-img-top">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text">{{ post.excerpt or post.content[:150] + '...' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">By {{ post.author.username }}</small>
+                            <small class="text-muted">{{ post.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('blog_post', post_id=post.id) }}" class="btn btn-outline-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('blog') }}" class="btn btn-primary">
+                View All Posts <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events -->
+<section class="py-5">
+    <div class="container">
+        <div class="section-title">
+            <h2>Upcoming Events</h2>
+            <p>Join us for these special worship and community events</p>
+        </div>
+        
+        <div class="row">
+            {% for event in upcoming_events %}
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="event-date text-center">
+                                <div class="bg-primary text-white p-2 rounded">
+                                    <div class="h4 mb-0">{{ event.event_date.strftime('%d') }}</div>
+                                    <small>{{ event.event_date.strftime('%b') }}</small>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text">{{ event.description[:100] }}...</p>
+                            </div>
+                        </div>
+                        <div class="event-details">
+                            <div class="mb-2">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                {{ event.event_date.strftime('%A, %B %d, %Y') }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-clock me-2 text-primary"></i>
+                                {{ event.event_date.strftime('%I:%M %p') }}
+                            </div>
+                            {% if event.location %}
+                            <div class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                {{ event.location }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('events') }}" class="btn btn-primary">
+                View All Events <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Prayers -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="section-title">
+            <h2>Featured Prayers</h2>
+            <p>Strengthen your faith with these powerful prayers</p>
+        </div>
+        
+        <div class="row">
+            {% for prayer in featured_prayers %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ prayer.title }}</h5>
+                        <p class="card-text">{{ prayer.content[:200] }}...</p>
+                        <a href="{{ url_for('prayer_detail', prayer_id=prayer.id) }}" class="btn btn-outline-primary">Read Full Prayer</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('prayers') }}" class="btn btn-primary">
+                View All Prayers <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Join Our Community of Worshippers</h2>
+        <p class="lead mb-4">Experience the transformative power of continuous adoration and community worship</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('live_adoration') }}" class="btn btn-light btn-lg w-100">
+                            <i class="fas fa-play me-2"></i>Join Live Adoration
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('submit_testimony') }}" class="btn btn-outline-light btn-lg w-100">
+                            <i class="fas fa-heart me-2"></i>Share Testimony
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{{ url_for('donate') }}" class="btn btn-warning btn-lg w-100">
+                            <i class="fas fa-hand-holding-heart me-2"></i>Support Ministry
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

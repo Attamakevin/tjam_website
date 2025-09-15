@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% block title %}Prayers List{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2>Prayers</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Featured</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prayer in prayers %}
+            <tr>
+                <td>{{ prayer.title }}</td>
+                <td>{{ prayer.category }}</td>
+                <td>{% if prayer.is_featured %}Yes{% else %}No{% endif %}</td>
+                <td>
+                    <a href="{{ url_for('admin_edit_prayer', prayer_id=prayer.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    <form method="post" action="{{ url_for('admin_delete_prayer', prayer_id=prayer.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ url_for('admin_add_prayer') }}" class="btn btn-primary">Add New Prayer</a>
+</div>
+{% endblock %}

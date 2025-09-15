@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Prayers - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Prayers</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h1>Prayer Resources</h1>
+        <p>Strengthen your spiritual journey with these powerful prayers</p>
+    </div>
+
+    <!-- Prayer Categories Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-3">Filter by Category:</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('prayers', category='all') }}" 
+                           class="btn btn-sm {{ 'btn-primary' if current_category == 'all' else 'btn-outline-primary' }}">
+                            All Prayers
+                        </a>
+                        {% for cat in categories %}
+                        <a href="{{ url_for('prayers', category=cat) }}" 
+                           class="btn btn-sm {{ 'btn-primary' if current_category == cat else 'btn-outline-primary' }}">
+                            {{ cat|title }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayers Grid -->
+    <div class="row">
+        {% for prayer in prayers %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 {{ 'border-warning' if prayer.is_featured else '' }}">
+                {% if prayer.is_featured %}
+                <div class="card-header bg-warning text-dark">
+                    <i class="fas fa-star me-2"></i>Featured Prayer
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ prayer.title }}</h5>
+                    {% if prayer.category %}
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">{{ prayer.category|title }}</span>
+                    </div>
+                    {% endif %}
+                    <p class="card-text">{{ prayer.content[:200] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Added {{ prayer.created_at.strftime('%b %d, %Y') }}</small>
+                        <a href="{{ url_for('prayer_detail', prayer_id=prayer.id) }}" class="btn btn-primary">
+                            Read Full Prayer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not prayers %}
+    <div class="text-center py-5">
+        <i class="fas fa-pray fa-3x text-muted mb-3"></i>
+        <h4>No Prayers Found</h4>
+        <p class="text-muted">
+            {% if current_category != 'all' %}
+            No prayers found in the "{{ current_category|title }}" category.
+            <br><a href="{{ url_for('prayers', category='all') }}">View all prayers</a>
+            {% else %}
+            Prayers will be added soon. Check back later!
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

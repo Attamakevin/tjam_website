@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Events - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Events</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h1>Ministry Events</h1>
+        <p>Join us for worship, fellowship, and spiritual growth</p>
+    </div>
+
+    <!-- Upcoming Events -->
+    {% if upcoming %}
+    <div class="mb-5">
+        <h3 class="mb-4">
+            <i class="fas fa-calendar-plus text-primary me-2"></i>Upcoming Events
+        </h3>
+        <div class="row">
+            {% for event in upcoming %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 border-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="event-date text-center me-3">
+                                <div class="bg-primary text-white p-3 rounded">
+                                    <div class="h3 mb-0">{{ event.event_date.strftime('%d') }}</div>
+                                    <div class="small">{{ event.event_date.strftime('%b') }}</div>
+                                    <div class="small">{{ event.event_date.strftime('%Y') }}</div>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="card-title">{{ event.title }}</h5>
+                                <p class="card-text">{{ event.description }}</p>
+                                
+                                <div class="event-details mt-3">
+                                    <div class="mb-2">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                        <strong>{{ event.event_date.strftime('%A, %B %d, %Y') }}</strong>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-clock text-primary me-2"></i>
+                                        {{ event.event_date.strftime('%I:%M %p') }}
+                                    </div>
+                                    {% if event.location %}
+                                    <div class="mb-2">
+                                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                        {{ event.location }}
+                                    </div>
+                                    {% endif %}
+                                    {% if event.category %}
+                                    <div class="mb-2">
+                                        <span class="badge bg-secondary">{{ event.category|title }}</span>
+                                        {% if event.is_recurring %}
+                                        <span class="badge bg-info ms-1">Recurring</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-1"></i>Add to Calendar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-calendar fa-3x text-muted mb-3"></i>
+        <h4>No Upcoming Events</h4>
+        <p class="text-muted">Check back soon for new events and activities!</p>
+    </div>
+    {% endif %}
+
+    <!-- Past Events -->
+    {% if past %}
+    <div>
+        <h3 class="mb-4">
+            <i class="fas fa-calendar-check text-muted me-2"></i>Past Events
+        </h3>
+        <div class="row">
+            {% for event in past %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="event-date text-center me-3">
+                                <div class="bg-light text-muted p-2 rounded">
+                                    <div class="h5 mb-0">{{ event.event_date.strftime('%d') }}</div>
+                                    <small>{{ event.event_date.strftime('%b') }}</small>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="card-title mb-1">{{ event.title }}</h6>
+                                <small class="text-muted">{{ event.event_date.strftime('%b %d, %Y') }}</small>
+                            </div>
+                        </div>
+                        <p class="card-text small">{{ event.description[:100] }}...</p>
+                        {% if event.location %}
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ event.location }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

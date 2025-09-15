@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Donate - TJAM{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 80px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Donate</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h1>Support Our Ministry</h1>
+        <p>Your generous donations help us continue our mission of worship and service</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body p-5">
+                    <h4 class="text-center mb-4">Make a Donation</h4>
+                    
+                    <!-- Donation Amount Options -->
+                    <div class="row mb-4">
+                        <div class="col-6 col-md-3 mb-2">
+                            <button class="btn btn-outline-primary w-100 donation-amount" data-amount="5000">₦5,000</button>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <button class="btn btn-outline-primary w-100 donation-amount" data-amount="10000">₦10,000</button>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <button class="btn btn-outline-primary w-100 donation-amount" data-amount="25000">₦25,000</button>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <button class="btn btn-outline-primary w-100 donation-amount" data-amount="50000">₦50,000</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customAmount" class="form-label">Or enter custom amount (₦)</label>
+                        <input type="number" class="form-control" id="customAmount" placeholder="Enter amount">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="donationPurpose" class="form-label">Donation Purpose</label>
+                        <select class="form-control" id="donationPurpose">
+                            <option value="general">General Ministry Support</option>
+                            <option value="adoration">Adoration Hall Maintenance</option>
+                            <option value="outreach">Community Outreach</option>
+                            <option value="youth">Youth Ministry</option>
+                            <option value="equipment">Audio/Video Equipment</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="recurring">
+                            <label class="form-check-label" for="recurring">
+                                Make this a monthly recurring donation
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-heart me-2"></i>Donate Now
+                        </button>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <h5>Other Ways to Give</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6 mb-3">
+                                <div class="p-3 border rounded">
+                                    <i class="fas fa-university fa-2x text-primary mb-2"></i>
+                                    <h6>Bank Transfer</h6>
+                                    <small>
+                                        <strong>Bank:</strong> First Bank Nigeria<br>
+                                        <strong>Account:</strong> 1234567890<br>
+                                        <strong>Name:</strong> TJAM
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="p-3 border rounded">
+                                    <i class="fas fa-mobile-alt fa-2x text-primary mb-2"></i>
+                                    <h6>Mobile Money</h6>
+                                    <small>
+                                        Send to: <strong>+234-123-456-7890</strong><br>
+                                        Reference: <strong>TJAM Donation</strong>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact Section -->
+            <div class="mt-5">
+                <h3 class="text-center mb-4">Your Impact</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-praying-hands fa-2x text-primary mb-3"></i>
+                                <h5>₦5,000</h5>
+                                <p>Supports one week of continuous adoration</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                                <h5>₦25,000</h5>
+                                <p>Sponsors a community outreach event</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const donationButtons = document.querySelectorAll('.donation-amount');
+    const customAmount = document.getElementById('customAmount');
+    
+    donationButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            donationButtons.forEach(btn => btn.classList.remove('btn-primary'));
+            donationButtons.forEach(btn => btn.classList.add('btn-outline-primary'));
+            
+            // Add active class to clicked button
+            this.classList.remove('btn-outline-primary');
+            this.classList.add('btn-primary');
+            
+            // Set custom amount field
+            customAmount.value = this.dataset.amount;
+        });
+    });
+    
+    customAmount.addEventListener('input', function() {
+        // Remove active class from all buttons when custom amount is entered
+        donationButtons.forEach(btn => btn.classList.remove('btn-primary'));
+        donationButtons.forEach(btn => btn.classList.add('btn-outline-primary'));
+    });
+});
+</script>
+{% endblock %}
