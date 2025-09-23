@@ -112,6 +112,22 @@
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'active' if 'schedule' in request.endpoint }}" href="{{ url_for('admin_schedules') }}">
+                                <i class="fas fa-clock me-2"></i>Schedules
+                            </a>
+                        </li>
+
+                    <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
+                    <li class="nav-item">
+                    <a class="nav-link {{ 'active' if 'telegram' in request.endpoint }}" href="{{ url_for('admin_telegram') }}">
+                        <i class="fab fa-telegram-plane me-2"></i>Telegram
+                        {% set active_subscribers = TelegramSubscriber.query.filter_by(is_active=True).count() if TelegramSubscriber else 0 %}
+                        {% if active_subscribers > 0 %}
+                        <span class="badge bg-success ms-auto">{{ active_subscribers }}</span>
+                        {% endif %}
+                    </a>
+                    </li>
                     </ul>
                 </div>
             </nav>

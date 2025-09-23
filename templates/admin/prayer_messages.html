@@ -1,0 +1,226 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Prayer Messages - TJAM Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .prayer-card {
+        transition: transform 0.2s;
+        border-left: 4px solid #007bff;
+    }
+    
+    .prayer-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .prayer-card.inactive {
+        opacity: 0.6;
+        border-left-color: #6c757d;
+    }
+    
+    .message-preview {
+        max-height: 100px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .message-preview::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(transparent, white);
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header and Stats -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-pray me-2"></i>Prayer Messages</h2>
+                <a href="{{ url_for('admin_add_prayer_message') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Message
+                </a>
+            </div>
+            <p class="text-muted">Manage personalized prayer messages sent to Telegram subscribers</p>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <h3>{{ messages|length }}</h3>
+                    <p class="mb-0">Total Messages</p>
+                    <small>{{ active_count }} Active</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Messages Grid -->
+    <div class="row">
+        {% for message in messages %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card prayer-card h-100 {{ 'inactive' if not message.is_active }}">
+                <div class="card-header d-flex justify-content-between align-items-start">
+                    <h6 class="card-title mb-0">{{ message.title }}</h6>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('admin_edit_prayer_message', message_id=message.id) }}">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                </a>
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ url_for('admin_delete_prayer_message', message_id=message.id) }}" 
+                                      onsubmit="return confirm('Are you sure you want to delete this message?')" style="display: inline;">
+                                    <button class="dropdown-item text-danger" type="submit">
+                                        <i class="fas fa-trash me-2"></i>Delete
+                                    </button>
+                                </form>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="previewMessage({{ message.id|tojson }}, {{ message.title|tojson }}, {{ message.message|tojson }})">
+                                    <i class="fas fa-eye me-2"></i>Preview
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="message-preview">
+                        {{ message.message|truncate(200) }}
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>{{ message.creator.username }}
+                        <br>
+                        <i class="fas fa-clock me-1"></i>{{ message.created_at.strftime('%b %d, %Y') }}
+                    </small>
+                    <div>
+                        {% if message.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-pray fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No Prayer Messages Yet</h4>
+                <p class="text-muted">Create your first personalized prayer message to send to subscribers.</p>
+                <a href="{{ url_for('admin_add_prayer_message') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add First Message
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Usage Statistics -->
+    {% if messages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Usage Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Most Recently Used Messages</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for message in recent_used_messages[:5] %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ message.title }}
+                                    <span class="badge bg-primary rounded-pill">{{ message.usage_count or 0 }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Quick Tips</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>Keep messages encouraging and uplifting</li>
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>Include scripture references when appropriate</li>
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>Personalize with subscriber's name using {name}</li>
+                                <li><i class="fas fa-lightbulb text-warning me-2"></i>Vary message length and tone</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Message Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewTitle">Prayer Message Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fab fa-telegram-plane me-2"></i>Telegram Preview
+                    </div>
+                    <div class="card-body" id="previewContent" style="white-space: pre-wrap; font-family: monospace;">
+                        <!-- Message content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewMessage(messageId, title, content) {
+        document.getElementById('previewTitle').textContent = title;
+        
+        // Format the message as it would appear in Telegram
+        const formattedMessage = `🙏 ${title}
+
+Hello [Subscriber Name],
+
+Today is your personal prayer day! 
+
+${content}
+
+Remember, God hears every prayer. Trust in His perfect timing.
+
+Blessings,
+TJAM Ministry`;
+        
+        document.getElementById('previewContent').textContent = formattedMessage;
+        new bootstrap.Modal(document.getElementById('previewModal')).show();
+    }
+</script>
+{% endblock %}

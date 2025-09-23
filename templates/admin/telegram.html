@@ -1,0 +1,367 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Telegram Management - TJAM Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 15px;
+    }
+    
+    .prayer-dates-badge {
+        display: inline-block;
+        margin: 2px;
+        padding: 4px 8px;
+        background-color: #e3f2fd;
+        color: #1976d2;
+        border-radius: 12px;
+        font-size: 0.75rem;
+    }
+    
+    .subscriber-card {
+        transition: transform 0.2s;
+    }
+    
+    .subscriber-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .notification-log {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+    }
+    
+    .test-section {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fab fa-telegram-plane me-2"></i>Telegram Management</h2>
+                <div>
+                    <a href="{{ url_for('admin_prayer_messages') }}" class="btn btn-info">
+                        <i class="fas fa-pray me-2"></i>Manage Prayer Messages
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <i class="fab fa-telegram-plane fa-2x mb-2"></i>
+                    <h4>{{ total_subscribers }}</h4>
+                    <p class="mb-0">Total Subscribers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-check fa-2x mb-2"></i>
+                    <h4>{{ active_subscribers }}</h4>
+                    <p class="mb-0">Active Subscribers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-envelope fa-2x mb-2"></i>
+                    <h4>{{ today_notifications }}</h4>
+                    <p class="mb-0">Today's Notifications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-pray fa-2x mb-2"></i>
+                    <h4>{{ prayer_messages_count }}</h4>
+                    <p class="mb-0">Prayer Messages</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form method="POST" action="{{ url_for('admin_setup_webhook') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-link me-2"></i>Setup Webhook
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <form method="POST" action="{{ url_for('admin_test_notifications') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-paper-plane me-2"></i>Test Notifications
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('admin_prayer_messages') }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit me-2"></i>Manage Prayer Messages
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-3 test-section p-3">
+                        <h6><i class="fas fa-info-circle me-2"></i>Setup Instructions</h6>
+                        <ol class="mb-0">
+                            <li>Create a Telegram bot using @BotFather</li>
+                            <li>Copy the bot token to your configuration</li>
+                            <li>Set your webhook URL in the configuration</li>
+                            <li>Click "Setup Webhook" above</li>
+                            <li>Share your bot with users: <code>t.me/your_bot_username</code></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribers Table -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-users me-2"></i>Subscribers</h5>
+                    <span class="badge bg-primary">{{ subscribers|length }} total</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Prayer Dates</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Last Notification</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subscriber in subscribers %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ subscriber.name }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if subscriber.telegram_username %}
+                                            @{{ subscriber.telegram_username }}
+                                        {% else %}
+                                            <span class="text-muted">No username</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if subscriber.prayer_dates %}
+                                            {% set dates = subscriber.prayer_dates | from_json %}
+                                            {% for date in dates %}
+                                                <span class="prayer-dates-badge">{{ date }}{{ date|ordinal }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">Not set</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if subscriber.is_active %}
+                                            <span class="badge bg-success status-badge">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary status-badge">Inactive</span>
+                                        {% endif %}
+                                        {% if subscriber.subscription_step != 'completed' %}
+                                            <span class="badge bg-warning status-badge">Setup Incomplete</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ subscriber.created_at.strftime('%b %d, %Y') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if subscriber.last_notification_sent %}
+                                            <small class="text-muted">
+                                                {{ subscriber.last_notification_sent.strftime('%b %d, %Y') }}
+                                            </small>
+                                        {% else %}
+                                            <span class="text-muted">Never</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="sendTestMessage({{ subscriber.id }})"
+                                                    title="Send Test Message">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                            {% if subscriber.is_active %}
+                                                <button class="btn btn-outline-warning btn-sm"
+                                                        onclick="toggleSubscriber({{ subscriber.id }}, false)"
+                                                        title="Deactivate">
+                                                    <i class="fas fa-pause"></i>
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-outline-success btn-sm"
+                                                        onclick="toggleSubscriber({{ subscriber.id }}, true)"
+                                                        title="Activate">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications Log -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history me-2"></i>Recent Notifications</h5>
+                </div>
+                <div class="card-body notification-log">
+                    {% for log in recent_notifications %}
+                    <div class="d-flex justify-content-between align-items-start mb-3 p-2 bg-light rounded">
+                        <div>
+                            <strong>{{ log.subscriber.name }}</strong>
+                            {% if log.message %}
+                                <br><small class="text-primary">{{ log.message.title }}</small>
+                            {% endif %}
+                            <br><small class="text-muted">{{ log.sent_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                            {% if log.prayer_date %}
+                                <br><small class="text-info">Prayer Date: {{ log.prayer_date }}{{ log.prayer_date|ordinal }}</small>
+                            {% endif %}
+                        </div>
+                        <span class="badge bg-{{ 'success' if log.status == 'sent' else 'danger' }}">
+                            {{ log.status }}
+                        </span>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">No recent notifications</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Send Test Message Modal -->
+<div class="modal fade" id="testMessageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send Test Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="testMessageForm">
+                    <div class="mb-3">
+                        <label for="testMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="testMessage" rows="4" 
+                                  placeholder="Enter your test message...">Hello! This is a test message from TJAM Ministry. 🙏</textarea>
+                    </div>
+                    <input type="hidden" id="subscriberId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitTestMessage()">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function sendTestMessage(subscriberId) {
+        document.getElementById('subscriberId').value = subscriberId;
+        new bootstrap.Modal(document.getElementById('testMessageModal')).show();
+    }
+
+    function submitTestMessage() {
+        const subscriberId = document.getElementById('subscriberId').value;
+        const message = document.getElementById('testMessage').value;
+        
+        if (!message.trim()) {
+            alert('Please enter a message');
+            return;
+        }
+
+        fetch(`/admin/telegram/send-test/${subscriberId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Test message sent successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('testMessageModal')).hide();
+            } else {
+                alert('Error sending message: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending message');
+        });
+    }
+
+    function toggleSubscriber(subscriberId, activate) {
+        fetch(`/admin/telegram/toggle-subscriber/${subscriberId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ active: activate })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating subscriber: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating subscriber');
+        });
+    }
+</script>
+{% endblock %}

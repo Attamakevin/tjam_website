@@ -1,0 +1,322 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Edit' if message else 'Add' }} Prayer Message - TJAM Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .telegram-preview {
+        background: #0088cc;
+        color: white;
+        padding: 10px;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .message-content {
+        padding: 15px;
+        white-space: pre-wrap;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.4;
+    }
+    
+    .character-counter {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .character-counter.warning {
+        color: #fd7e14;
+    }
+    
+    .character-counter.danger {
+        color: #dc3545;
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_telegram') }}">Telegram</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_prayer_messages') }}">Prayer Messages</a></li>
+                    <li class="breadcrumb-item active">{{ 'Edit' if message else 'Add' }} Message</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Form Section -->
+        <div class="col-lg-8">
+            <div class="card form-section">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>{{ 'Edit' if message else 'Create New' }} Prayer Message
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label for="title" class="form-label">
+                                <i class="fas fa-heading me-2"></i>Message Title <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="title" 
+                                   name="title" 
+                                   value="{{ message.title if message else '' }}"
+                                   placeholder="e.g., Morning Blessing, Strength for Today, etc."
+                                   required
+                                   maxlength="200"
+                                   onkeyup="updatePreview(); updateCharCount('title', 200)">
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="form-text text-muted">This will appear as the message header</small>
+                                <small class="character-counter" id="title-counter">0/200</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="message" class="form-label">
+                                <i class="fas fa-comment-dots me-2"></i>Prayer Message <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" 
+                                      id="message" 
+                                      name="message" 
+                                      rows="12"
+                                      placeholder="Write your inspirational prayer message here...
+
+Example:
+May God's peace fill your heart today. As you face whatever challenges lie ahead, remember that His strength is made perfect in your weakness.
+
+'Be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.' - Joshua 1:9
+
+Take a moment to pray and surrender your worries to Him."
+                                      required
+                                      onkeyup="updatePreview(); updateCharCount('message', 3000)">{{ message.message if message else '' }}</textarea>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Use <code>{name}</code> to personalize with subscriber's name
+                                </small>
+                                <small class="character-counter" id="message-counter">0/3000</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="is_active" 
+                                       name="is_active" 
+                                       {{ 'checked' if not message or message.is_active }}>
+                                <label class="form-check-label" for="is_active">
+                                    <i class="fas fa-toggle-on me-2"></i>Active Message
+                                </label>
+                                <small class="form-text text-muted d-block mt-1">
+                                    Only active messages will be randomly selected for sending to subscribers
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_prayer_messages') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>{{ 'Update' if message else 'Create' }} Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips and Guidelines -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Writing Guidelines</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success"><i class="fas fa-check-circle me-2"></i>Do</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Keep messages uplifting and encouraging</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Include relevant Bible verses when appropriate</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Make it personal and relatable</li>
+                                <li><i class="fas fa-check text-success me-2"></i>End with a call to prayer or reflection</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Use simple, clear language</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger"><i class="fas fa-times-circle me-2"></i>Avoid</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-times text-danger me-2"></i>Overly complex theological terms</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Negative or discouraging language</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Messages that are too lengthy</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Controversial topics</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Generic, impersonal content</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="col-lg-4">
+            <div class="card preview-card sticky-top" style="top: 20px;">
+                <div class="telegram-preview">
+                    <i class="fab fa-telegram-plane me-2"></i>Telegram Preview
+                </div>
+                <div class="message-content" id="previewContent">
+                    <div class="text-muted text-center py-4">
+                        <i class="fas fa-eye fa-2x mb-3"></i>
+                        <p>Preview will appear here as you type...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Statistics (if editing) -->
+            {% if message %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Message Stats</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h5 class="text-primary">{{ usage_count or 0 }}</h5>
+                            <small class="text-muted">Times Sent</small>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-info">{{ message.created_at.strftime('%b %Y') }}</h5>
+                            <small class="text-muted">Created</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updatePreview() {
+        const title = document.getElementById('title').value || '[Message Title]';
+        const message = document.getElementById('message').value || '[Your prayer message will appear here...]';
+        
+        const previewContent = `<strong>🙏 ${title}</strong>
+
+Hello [Subscriber Name],
+
+Today is your personal prayer day! 
+
+${message}
+
+<em>Remember, God hears every prayer. Trust in His perfect timing.
+
+Blessings,
+TJAM Ministry</em>`;
+        
+        document.getElementById('previewContent').innerHTML = previewContent.replace(/\n/g, '<br>');
+    }
+
+    function updateCharCount(fieldId, maxLength) {
+        const field = document.getElementById(fieldId);
+        const counter = document.getElementById(fieldId + '-counter');
+        const currentLength = field.value.length;
+        
+        counter.textContent = `${currentLength}/${maxLength}`;
+        
+        // Update counter color based on length
+        counter.className = 'character-counter';
+        if (currentLength > maxLength * 0.9) {
+            counter.classList.add('danger');
+        } else if (currentLength > maxLength * 0.75) {
+            counter.classList.add('warning');
+        }
+    }
+
+    // Initialize preview and counters
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePreview();
+        updateCharCount('title', 200);
+        updateCharCount('message', 3000);
+    });
+
+    // Auto-save draft functionality (optional)
+    let saveTimeout;
+    function autoSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            const formData = {
+                title: document.getElementById('title').value,
+                message: document.getElementById('message').value,
+                is_active: document.getElementById('is_active').checked
+            };
+            
+            // Save to localStorage as draft
+            localStorage.setItem('prayer_message_draft', JSON.stringify(formData));
+            
+            // Show save indicator
+            const indicator = document.createElement('div');
+            indicator.innerHTML = '<small class="text-muted"><i class="fas fa-save me-1"></i>Draft saved</small>';
+            indicator.className = 'position-fixed bottom-0 end-0 p-3 bg-white shadow rounded';
+            document.body.appendChild(indicator);
+            
+            setTimeout(() => indicator.remove(), 2000);
+        }, 2000);
+    }
+
+    // Attach auto-save to form inputs
+    document.getElementById('title').addEventListener('input', autoSave);
+    document.getElementById('message').addEventListener('input', autoSave);
+    document.getElementById('is_active').addEventListener('change', autoSave);
+
+    // Load draft on page load (if creating new message)
+    {% if not message %}
+    document.addEventListener('DOMContentLoaded', function() {
+        const draft = localStorage.getItem('prayer_message_draft');
+        if (draft) {
+            try {
+                const data = JSON.parse(draft);
+                if (confirm('A draft was found. Would you like to restore it?')) {
+                    document.getElementById('title').value = data.title || '';
+                    document.getElementById('message').value = data.message || '';
+                    document.getElementById('is_active').checked = data.is_active !== false;
+                    updatePreview();
+                    updateCharCount('title', 200);
+                    updateCharCount('message', 3000);
+                }
+            } catch (e) {
+                console.log('Error loading draft:', e);
+            }
+        }
+    });
+    {% endif %}
+
+    // Clear draft on successful form submission
+    document.querySelector('form').addEventListener('submit', function() {
+        localStorage.removeItem('prayer_message_draft');
+    });
+</script>
+{% endblock %}
