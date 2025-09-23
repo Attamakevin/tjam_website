@@ -4,3 +4,6 @@ Flask-SQLAlchemy==3.0.5
 Flask-Login==0.6.2
 Werkzeug==2.3.7
 python-dotenv==1.0.0
+requests
+gunicorn==20.1.0
+apscheduler==3.10.1
