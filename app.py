@@ -26,7 +26,7 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Telegram Configuration - SET THESE VALUES
 TELEGRAM_BOT_TOKEN = "7993041952:AAHXAn-s7vfMV8xCzwOJEB8Bp8XzLmW8uF4"  # Get this from @BotFather
-TELEGRAM_WEBHOOK_URL = "http://127.0.0.1:5000/telegram-webhook"  # Your webhook URL
+TELEGRAM_WEBHOOK_URL = "https://tjam.onrender.com/telegram-webhook"  # Your webhook URL
 
 # Create upload directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
