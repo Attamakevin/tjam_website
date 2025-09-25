@@ -161,7 +161,7 @@ class TelegramSubscriber(db.Model):
     telegram_chat_id = db.Column(db.String(50), nullable=False, unique=True)
     telegram_username = db.Column(db.String(50))
     is_active = db.Column(db.Boolean, default=True)
-    prayer_dates = db.Column(db.Text)  # JSON array of dates [2, 15, 28] etc
+    prayer_dates = db.Column(db.Text)  # JSON array of dates [2, 15, 31] etc
     subscription_step = db.Column(db.String(20), default='completed')  # 'awaiting_dates', 'completed'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_notification_sent = db.Column(db.DateTime)
@@ -184,7 +184,7 @@ class NotificationLog(db.Model):
     sent_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), default='sent')
     response_data = db.Column(db.Text)
-    prayer_date = db.Column(db.Integer)  # Which date this was sent for (1-28)
+    prayer_date = db.Column(db.Integer)  # Which date this was sent for (1-31)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -372,7 +372,7 @@ def telegram_webhook():
 
 <b>Personalize Your Prayer Experience</b>
 
-Please choose your monthly prayer dates (1-28). You can select multiple dates by sending them separated by commas.
+Please choose your monthly prayer dates (1-31). You can select multiple dates by sending them separated by commas.
 
 <b>Examples:</b>
 • <code>7</code> (7th of every month)
@@ -392,13 +392,13 @@ Please choose your monthly prayer dates (1-28). You can select multiple dates by
                     
                     for date_str in dates_input:
                         date_num = int(date_str)
-                        if 1 <= date_num <= 28:
+                        if 1 <= date_num <= 31:
                             prayer_dates.append(date_num)
                     
                     if not prayer_dates:
                         error_msg = """<b>❌ Invalid dates</b>
 
-Please enter valid dates between 1 and 28, separated by commas.
+Please enter valid dates between 1 and 31, separated by commas.
 
 <b>Examples:</b>
 • <code>7</code>
@@ -536,7 +536,7 @@ Your prayer dates have been saved. Send <code>/start</code> to resubscribe anyti
                     # They're in the middle of setting dates but sent something else
                     reminder_msg = """<b>📅 Please enter your prayer dates</b>
 
-Send numbers between 1-28, separated by commas.
+Send numbers between 1-31, separated by commas.
 
 <b>Examples:</b> <code>7</code> or <code>1,15</code> or <code>5,12,25</code>"""
                     send_telegram_message(chat_id, reminder_msg)
@@ -1821,7 +1821,7 @@ if __name__ == '__main__':
     print("- Complete ministry website with blog, videos, events")
     print("- Admin panel for content management")
     print("- Telegram prayer notification system")
-    print("- Personalized prayer scheduling (1-28 of each month)")
+    print("- Personalized prayer scheduling (1-31 of each month)")
     print("- Live streaming management")
     print("- Prayer and testimony management")
     print("- Automated daily notifications")
